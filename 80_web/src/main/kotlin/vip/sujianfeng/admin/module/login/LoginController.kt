@@ -24,7 +24,7 @@ class LoginController: BaseController() {
         return ModelAndView("login").apply {
             val systemRows = jdbcTbDao().selectList(RbacSystemVO::class.java, " and a.state = 0 ", 1, 1000, "a.sort_no")
             this.addObject("defaultLoginPane", "panePassword")
-            this.addObject("pageTitle", "后古BI")
+            this.addObject("pageTitle", "乐享后台")
             this.addObject("systemRows", systemRows)
             this.addObject("defaultSystemId", systemRows[0].id)
             UserUtils.logout()

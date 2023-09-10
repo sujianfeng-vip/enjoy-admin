@@ -1,0 +1,20 @@
+
+.detailPageTop{
+    background-color: #f7f7f8; height: 50px;text-align: left;
+    padding-top: 10px; padding-left: 10px;
+}
+.detailPageTop .title{
+    font-size: 22px;
+}
+.detailBodyBorderTop{
+    height: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-color: #b9a589;
+}
+.detailToolBar{
+    padding: 15px 5px;
+    /*border-left: silver solid 1px;
+    border-right: silver solid 1px;*/
+}
+

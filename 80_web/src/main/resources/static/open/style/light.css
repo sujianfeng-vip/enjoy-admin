@@ -1,0 +1,182 @@
+body {
+
+}
+
+#iFrameBody {
+    border: none; width: 100%; height: 100%
+}
+
+
+.loading {
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 1);
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+.layout{
+    border: 1px solid #d7dde4;
+    background: #f5f7f9;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.layout-logo{
+    width: 100px;
+    height: 30px;
+    background: #a9a8a8;
+    border-radius: 3px;
+    float: left;
+    position: relative;
+    top: 15px;
+    left: 20px;
+
+}
+.layout-nav{
+    width: 420px;
+    margin: 0 auto;
+}
+.layout-breadcrumb{
+    width: 50%;
+    float: left;
+    margin-left: 10px;
+}
+.layout-content{
+    padding: 2px 2px 0 2px;
+    background: darkgray;
+}
+.layout-content-main{
+    height: 100%;
+}
+.layout-copy{
+    text-align: center;
+    padding: 10px 0 20px;
+    color: #9ea7b4;
+    border-top: 1px solid #9ea7b4;
+}
+.layout-left{
+    /*background: #50596e;*/
+    width: 200px;
+    background-color: white;
+    border-right: rgba(169, 169, 169, 0.5) 1px solid;
+}
+.layout-body{
+    width: calc(100% - 200px);
+}
+.layout-header{
+    height: 60px;
+    line-height: 60px;
+    vertical-align: middle;
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(206, 194, 194, 0.5);
+}
+.layout-logo-left{
+    width: 90%;
+    height: 50px;
+    line-height: 50px;
+    /*background: #5b6270;*/
+    border-radius: 3px;
+    /*margin: 15px auto;*/
+    /*color: #a6aaad;*/
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+    font-size: 20px;
+}
+.ivu-form-item {
+    margin-bottom: 0;
+}
+
+.detailPageTop{
+    background-color: #f7f7f8; height: 50px;text-align: left;
+    padding-top: 10px; padding-left: 10px;
+}
+.detailPageTop .title{
+    font-size: 22px;
+}
+.detailBodyBorderTop{
+    height: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-color: #b9a589;
+}
+.detailToolBar{
+    padding: 10px 5px 5px 5px;
+    /*border-left: silver solid 1px;
+    border-right: silver solid 1px;*/
+}
+.commFormBox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+}
+.commForm {
+    position: relative;
+    box-shadow: -1px 2px 2px 2px #3f3f40;
+    border-radius: 5px;
+}
+.commForm .toolbar {
+    background-color: #313336;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    color: white;
+}
+.commForm .toolbar .title{
+    margin-left: 10px;
+}
+.commForm .toolbar .close-btn {
+    float: right;
+    margin-right: -7px;
+    margin-top: -3px;
+    cursor: pointer;
+    background-color: darkred;
+    border-radius: 50%;
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    vertical-align: middle;
+}
+.left-pnl {
+    width: calc(15% - 5px); margin-right: 5px; min-height: 800px;
+}
+.tab-title {
+    position: relative;
+    display: inline-block;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    padding: 5px;
+    width: 80px;
+    cursor: pointer;
+    text-align: center;
+}
+.tab-title label {
+    cursor: pointer;
+}
+.tab-selected {
+    background-color: #2b85e4;
+}
+.tab-close {
+    position: absolute;
+    right: -2px;
+    top: -2px;
+    display: inline-block;
+    background-color: #313336;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    font-size: 5px;
+    line-height: 15px;
+    vertical-align: middle;
+}
+.tab-close:hover {
+    background-color: red;
+}
