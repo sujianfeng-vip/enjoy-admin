@@ -3,16 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <th:block th:include="comm/head.html :: include" />
+    <script th:inline="javascript">
+        store.keyword = "";
+        store.modalEdit = false
+        store.modalRoleEdit = false
+        store.formItem = {}
+        store.pageNo = 1;
+        store.totalSize = 0;
+        store.rows = [];
+    </script>
+    <script th:inline="javascript">
+        store.columns = [
+            {title: '名称', key: 'name'},
+            {title: '最后登录系统', key: 'systemName'},
+            {title: '用户类型', key: 'userType', render: function (h, p) {
+                    var label = '';
+                    var tmp = '' + p.row.userType;
+                    p.row.userType = tmp;
+                    if (tmp === '0') { label = '未审核' }
+                    if (tmp === '1') { label = '普通用户' }
+                    if (tmp === '99') { label = '超级用户' }
+                    return h('div', [
+                        h('label', {
+                            props: {
+                                type: 'primary',
+                                size: 'small'
+                            },
+                            style: {
+                                marginRight: '5px'
+                            }
+                        }, label)
+                    ]);
+                }
+            },
+            {title: '手机', key: 'telephone'},
+            {title: '登录名称', key: 'loginName'},
+            {title: '备注', key: 'remark'},
+            {title: '操作', key: 'action',
+                render: function (h, p) {
+                    return h('Dropdown',{
+                        props:{
+                            trigger:"click",
+                            transfer: true  //此参数避免下拉框在边界时，被表格遮住
+                        },
+                        on:{
+                            'on-click': (value)=>{
+                                if (value === "role") {
+                                    methods.editRole(p.row)
+                                }
+                                if (value === "edit") {
+                                    methods.edit(p.row)
+                                }
+                                if (value === "delete") {
+                                    methods.delete(p.row)
+                                }
+                            }
+                        }
+                    }, [
+                        h('a',[
+                            h('span', '管理'),
+                            h('Icon',{
+                                props: {
+                                    type: 'md-arrow-dropdown',
+                                    size:'18'
+                                }
+                            })
+                        ]),
+                        h('DropdownMenu',{
+                                slot: "list"
+                            },
+                            [
+                                h('DropdownItem',{
+                                    props:{
+                                        name: 'role'
+                                    }
+                                }, '角色'),
+                                h('DropdownItem',{
+                                    props:{
+                                        name: 'edit'
+                                    }
+                                }, '修改'),
+                                h('DropdownItem',{
+                                    props:{
+                                        name: 'delete'
+                                    }
+                                }, '删除')
+                            ]
+                        )
+                    ]);
+                }
+            }
+        ];
+    </script>
+
+    <script th:inline="javascript">
+        var moduleApi = /*[[${moduleApi}]]*/ "";
+        var moduleCode = /*[[${moduleCode}]]*/ "";
+        methods.loadPageData = function(pageNo) {
+            var param = {
+                systemId: store.systemId,
+                keyword: store.keyword,
+                pageNo: pageNo,
+                pageSize: 15
+            };
+            httpClient.postJson(`/${moduleApi}/queryPage`,  param ,function(op){
+                if (!op.success){
+                    window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                    setTimeout(function (){
+                        window.vue.$Loading.error();
+                    }, 100)
+                    return;
+                }
+                store.rows = op.data.rows;
+                store.totalSize = op.data.totalSize;
+            })
+            store.pageNo = pageNo;
+        }
+        methods.addNew = function() {
+            window.parent.callCommForm("添加", `/${moduleCode}/edit`, 350, 500)
+        }
+        methods.delete = function(row) {
+            var param = {
+                ids: [row.id]
+            }
+            window.parent.confirmForm("提示", "您确定删除此行数据?", function(){
+                httpClient.postJson(`/${moduleApi}/delete`,  param ,function(op){
+                    if (!op.success){
+                        window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                        setTimeout(function (){
+                            window.vue.$Loading.error();
+                        }, 100)
+                        return;
+                    }
+                    window.vue.$Notice.info({title: '删除成功!'})
+                    methods.loadPageData(store.pageNo)
+                })
+            })
+        }
+        methods.edit = function(row) {
+            window.parent.callCommForm("修改", `/${moduleCode}/edit?id=${row.id}`, 350, 500)
+        }
+        methods.editRole = function(row) {
+            window.parent.callCommForm("修改角色", `/rbac/user-role/list?userId=${row.id}`, 500, 700)
+        }
+        methods.save = function() {
+            httpClient.postJson(`/${moduleApi}/save`, store.formItem ,function(op){
+                if (!op.success){
+                    window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                    setTimeout(function (){
+                        window.vue.$Loading.error();
+                    }, 100)
+                    return;
+                }
+                window.vue.$Notice.info({title: '保存成功!'})
+                store.modalEdit = false
+                methods.loadPageData(store.pageNo)
+            })
+        }
+        methods.cancel = function() {
+
+        }
+        methods.pageChange = function (pageNo) {
+            methods.loadPageData(pageNo);
+        };
+
+    </script>
+    <script th:inline="javascript">
+        $(function(){
+            setTimeout(function(){
+                methods.loadPageData(1);
+            }, 500);
+        });
+    </script>
 </head>
 <body>
 
 <div id="app">
-    <th:block th:include="${moduleCode} + '/list/data.html' :: parts" />
-    <th:block th:include="${moduleCode} + '/list/methods.html' :: parts" />
-    <th:block th:include="${moduleCode} + '/list/columns.html' :: parts" />
-    <th:block th:include="${moduleCode} + '/list/ready.html' :: parts" />
-    <th:block th:include="${moduleCode} + '/list/toolbar.html' :: parts" />
-    <th:block th:include="${moduleCode} + '/list/table.html' :: parts" />
+    <div class="detailToolBar">
+        <i-form inline @submit.native.prevent>
+            <Row>
+                <form-item>
+                    <i-input v-model="keyword"  placeholder="请输入关键字..." style="width: 200px"/>
+                </form-item>
+                <form-item>
+                    <i-button @click = "loadPageData(1);">查询</i-button>
+                    <i-button @click = "addNew();">新增</i-button>
+                </form-item>
+            </Row>
+        </i-form>
+    </div>
+    <i-table highlight-row ref="currentRowTable" :columns="columns" :data="rows"></i-table>
+    <div style="width: 100%; text-align: center">
+        <Page :total="totalSize" :page-size="15" :current="pageNo" show-total @on-change="pageChange"/>
+    </div>
 </div>
 
 </body>
