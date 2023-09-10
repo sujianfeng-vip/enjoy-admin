@@ -1,0 +1,103 @@
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>角色权限分配</title>
+    <th:block th:include="comm/head.html :: include" />
+    <script th:inline="javascript">
+        var moduleApi = /*[[${moduleApi}]]*/ "";
+        var roleId = /*[[${roleId}]]*/ "";
+        var moduleCode = /*[[${moduleCode}]]*/ "";
+        store.systemId = /*[[${systemId}]]*/ "";
+        store.value = ""
+        store.treeNodes = []
+        methods.loadPageData = function(pageNo) {
+            var param = {
+                systemId: store.systemId,
+                roleId: roleId,
+            };
+            httpClient.postJson(`/${moduleApi}/queryTree`,  param ,function(op){
+                if (!op.success){
+                    window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                    setTimeout(function (){
+                        window.vue.$Loading.error();
+                    }, 100)
+                    return;
+                }
+                store.treeNodes = op.data
+            })
+            store.pageNo = pageNo;
+        }
+        methods.addNew = function() {
+            store.formItem = {}
+            store.modalEdit = true
+        }
+        methods.edit = function(row) {
+            store.formItem = row
+            store.modalEdit = true
+        }
+        methods.save = function() {
+            var param = {
+                systemId: store.systemId,
+                roleId: roleId,
+                treeNodes: store.treeNodes
+            }
+            httpClient.postJson(`/${moduleApi}/allowRolePermissionByTree`, param ,function(op){
+                if (!op.success){
+                    window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                    setTimeout(function (){
+                        window.vue.$Loading.error();
+                    }, 100)
+                    return;
+                }
+                window.vue.$Notice.info({title: "提交成功"})
+                methods.loadPageData(store.pageNo)
+            })
+        }
+        methods.cancel = function() {
+
+        }
+        methods.pageChange = function (pageNo) {
+            methods.loadPageData(pageNo);
+        }
+        methods.onSelectChange = function(selectRows) {
+            console.log("selectRows => ", selectRows)
+            methods.allowRolePermission(store.rows, selectRows)
+        }
+
+        methods.systemChange = function(value) {
+            window.location.href = `/${moduleCode}/list?systemId=${value}&roleId=${roleId}`
+        }
+
+        $(function(){
+            setTimeout(function(){
+                methods.loadPageData(1);
+            }, 500);
+        });
+    </script>
+</head>
+<body>
+
+<div id="app">
+    <div class="detailToolBar">
+        <i-form inline @submit.native.prevent>
+            <Row>
+                <form-item>
+                    <i-select v-model="systemId" placeholder="系统" style="width: 200px" @on-change="systemChange">
+                        <i-option th:each="item: ${systemRows}" th:value="${item.id}" th:text="${item.name}"></i-option>
+                    </i-select>
+                </form-item>
+                <form-item>
+                    <i-button @click = "save">提交</i-button>
+                </form-item>
+            </Row>
+        </i-form>
+    </div>
+    <Tree :data="treeNodes" v-width="200" show-checkbox multiple />
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:include="comm/head.html :: include" />
+    <style>
+        body {
+            padding: 15px;
+            background-size: 100% auto;
+        }
+        .welcome {
+        }
+        .pnl-logo {
+            position: absolute;
+            width: 300px;
+            top: 10px;
+            right: 10px;
+            text-align: center;
+        }
+        .pnl-logo img {
+            width: 60%;
+        }
+    </style>
+
+    <script>
+
+    </script>
+</head>
+<body>
+<div id="app">
+    <div class="welcome">欢迎您!<th:block th:text="${currUser.name}"></th:block></div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:include="comm/head.html :: include" />
+
+    <script th:inline="javascript">
+        var moduleApi = /*[[${moduleApi}]]*/ "";
+        var moduleCode = /*[[${moduleCode}]]*/ "";
+        store.formItem = {}
+        var formItemJson = /*[[${formItemJson}]]*/ "";
+        store.formItem = JSON.parse(formItemJson)
+
+        methods.reset = function() {
+            window.location.reload()
+        }
+
+        methods.save = function() {
+            httpClient.postJson(`/${moduleApi}/save`, store.formItem ,function(op){
+                if (!op.success){
+                    window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                    setTimeout(function (){
+                        window.vue.$Loading.error();
+                    }, 100)
+                    return;
+                }
+                store.formItem = op.data
+                window.vue.$Notice.info({title: '保存成功!'})
+                setTimeout(function(){
+                    window.location.href = `/${moduleCode}/edit?systemId=${store.systemId}&id=${op.data.id}`
+                }, 500)
+            })
+        }
+    </script>
+</head>
+<body>
+
+<div id="app">
+    <i-form inline :label-width='100' v-model="formItem"  style=''>
+        <Row>
+            <form-item label='名称' style='width: 90%; margin-bottom: 5px' >
+                <i-input v-model='formItem.name'  placeholder='主机名称' style='width: 80%' />
+            </form-item>
+            <form-item label='备注' style='width: 90%; margin-bottom: 5px' >
+                <i-input v-model='formItem.remark'  placeholder='请输入备注...' style='width: 80%' />
+            </form-item>
+        </Row>
+        <Row style="text-align: center">
+            <i-button @click="reset" >重置</i-button>
+            <i-button @click="save" type="primary" >保存</i-button>
+        </Row>
+    </i-form>
+</div>
+
+
+
+</body>
+</html>

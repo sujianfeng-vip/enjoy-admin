@@ -1,0 +1,20 @@
+<th:block th:fragment="menuBlock(title, menus)">
+    <i-Menu active-name="" width="auto" :open-names="[]">
+        <div class="layout-logo-left" th:text="${title}"></div>
+        <Submenu th:each="menuNode: ${menus}" th:name="${menuNode.id}" >
+            <template slot="title">
+                <Icon type="ios-keypad"></Icon>
+                <th:block th:text="${menuNode.name}" />
+            </template>
+            <Menu-item onclick="menuItemClick(this)"
+                       th:title="${subMenu.name}" th:parentTitle="${subMenu.parentName}"
+                       th:url="${subMenu.url}"
+                       th:windowType="${subMenu.windowType}"
+                       th:each="subMenu: ${menuNode.children}" th:name="${subMenu.id}">
+                <Icon type="ios-archive"></Icon>
+                <th:block th:text="${subMenu.name}" />
+            </Menu-item>
+        </Submenu>
+    </i-Menu>
+
+</th:block>

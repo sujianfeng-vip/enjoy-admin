@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="/comm/browser-form.js"></script>
+
+    <script>
+
+        function showSubForm(name) {
+            let w = window.screen.availWidth
+            let h = window.screen.availHeight
+            let baseParams = {
+                url: "test1.html",
+                name,
+                params: {a: 1, b: 2},
+                onTop: true
+            }
+            let uiParams = {
+                top: h * 0.20,
+                left: w * 0.20,
+                height: h * 0.5,
+                width: w * 0.5
+            }
+            showBrowseForm(baseParams, uiParams)
+        }
+
+        callback = (a) => {
+            console.log("子窗口返回数据2 => ", a)
+        }
+
+    </script>
+</head>
+<body>
+
+    <button onclick="showSubForm('test1')">子窗口1</button>
+    <button onclick="showSubForm('test2')">子窗口2</button>
+
+</body>
+</html>

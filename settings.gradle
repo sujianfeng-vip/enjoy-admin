@@ -1,0 +1,4 @@
+rootProject.name = 'enjoy-admin'
+include '00_models'
+include '80_web'
+

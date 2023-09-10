@@ -1,0 +1,48 @@
+<th:block th:fragment="parts">
+<script th:inline="javascript">
+    var moduleApi = /*[[${moduleApi}]]*/ "";
+    var moduleCode = /*[[${moduleCode}]]*/ "";
+    methods.loadPageData = function(pageNo) {
+        var param = {
+            systemId: store.systemId,
+            keyword: store.keyword,
+            pageNo: pageNo,
+            pageSize: 15
+        };
+        httpClient.postJson(`/${moduleApi}/queryPage`,  param ,function(op){
+            if (!op.success){
+                window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                setTimeout(function (){
+                    window.vue.$Loading.error();
+                }, 100)
+                return;
+            }
+            store.rows = op.data.rows;
+            store.totalSize = op.data.totalSize;
+        })
+        store.pageNo = pageNo;
+    }
+
+    methods.save = function() {
+        httpClient.postJson(`/${moduleApi}/save`, store.formItem ,function(op){
+            if (!op.success){
+                window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                setTimeout(function (){
+                    window.vue.$Loading.error();
+                }, 100)
+                return;
+            }
+            window.vue.$Notice.info({title: '保存成功!'})
+            store.modalEdit = false
+            methods.loadPageData(store.pageNo)
+        })
+    }
+    methods.cancel = function() {
+
+    }
+    methods.pageChange = function (pageNo) {
+        methods.loadPageData(pageNo);
+    };
+
+</script>
+</th:block>

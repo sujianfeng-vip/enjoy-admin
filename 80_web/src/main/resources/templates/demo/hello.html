@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>演示</title>
+</head>
+<body>
+    <span th:text="${msg}">span默认文本内容</span>
+
+    <h3>th:text与th:href标签</h3>
+
+    <div>
+        当前用户id: <span th:text="${currUserId}">当前用户id</span>
+    </div>
+    <div><a href="/demo/hello">hello.html</a></div>
+    <div><a href="/demo/hello2">hello2.html</a></div>
+    <div th:object="${demoUser1}">
+        id: <a href="#" th:href="'/demo/hello?currUserId=' + *{id}"><span th:text="*{id}">用户id</span></a>
+        name: <span th:text="*{name}">姓名</span>
+        age: <span th:text="*{age}">年龄</span>
+    </div>
+
+    <div>
+        id: <a href="#" th:href="@{'/demo/hello?currUserId=' + ${demoUser2.id}}"><span th:text="${demoUser2.id}">用户id</span></a>
+        name: <span th:text="${demoUser2.name}">姓名</span>
+        age: <span th:text="${demoUser2.age}">年龄</span>
+    </div>
+
+    <h3>th:action标签</h3>
+
+    <form th:action="@{/demo/hello}">
+        <input type="text" name="currUserId" value="" placeholder="输入用户id..."/>
+        <input type="submit" value="提交" />
+    </form>
+
+    <h3>th:each/th:if标签</h3>
+    <p th:each="demoUser: ${userList}">
+        <span th:text="${demoUser.id}"></span>
+        <span th:text="${demoUser.name}"></span>
+        <span th:text="${demoUser.age}"></span>
+        <span th:if="${demoUser.age} >= 18">成年</span>
+        <span th:else>未成年</span>
+    </p>
+
+    <h3>th:fragment公共模块标签</h3>
+
+    <h5>th:insert引入公共模块</h5>
+    <div th:insert="demo/footer :: copy"></div>
+
+    <h5>th:replace引入公共模块</h5>
+    <div th:replace="demo/footer :: copy"></div>
+
+    <h5>th:replace引入公共模块</h5>
+    <div th:include="demo/footer :: copy"></div>
+
+    <h3>调用静态类</h3>
+    <th:block th:text='${T(cc.twobears.tbcore.utils.StringUtilsEx).leftStr("aaa,bbb", ",")}'/>
+
+</body>
+</html>

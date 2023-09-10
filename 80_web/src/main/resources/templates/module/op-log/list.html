@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:include="comm/head.html :: include" />
+    <script th:inline="javascript">
+        store.keyword = "";
+        store.modalEdit = false
+        store.formItem = {}
+        store.pageNo = 1;
+        store.totalSize = 0;
+        store.rows = [];
+        var moduleApi = /*[[${moduleApi}]]*/ "";
+        var moduleCode = /*[[${moduleCode}]]*/ "";
+
+        store.columns = [
+            {title: '操作人', key: 'userName'},
+            {title: '事项', key: 'content'},
+            {title: '时间', key: 'createTime',
+                render: function(h, p){
+                    let label = timestamp2dateTimeShow(p.row.createTime)
+                    return h('div', [
+                        h('label', {
+                            props: {
+                                type: '',
+                                size: 'small'
+                            },
+                            style: {
+                                marginRight: '5px'
+                            }
+                        }, label)
+                    ])
+                }
+            }
+        ];
+
+        methods.loadPageData = function(pageNo) {
+            var param = {
+                systemId: store.systemId,
+                keyword: store.keyword,
+                pageNo: pageNo,
+                pageSize: 15
+            };
+            httpClient.postJson(`/${moduleApi}/queryPage`,  param ,function(op){
+                if (!op.success){
+                    window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                    setTimeout(function (){
+                        window.vue.$Loading.error();
+                    }, 100)
+                    return;
+                }
+                store.rows = op.data.rows;
+                store.totalSize = op.data.totalSize;
+            })
+            store.pageNo = pageNo;
+        }
+
+        methods.pageChange = function (pageNo) {
+            methods.loadPageData(pageNo);
+        };
+
+        $(function(){
+            setTimeout(function(){
+                methods.loadPageData(1);
+            }, 500);
+        });
+
+    </script>
+
+</head>
+<body>
+
+<div id="app">
+    <div class="detailToolBar">
+        <i-form inline @submit.native.prevent>
+            <Row>
+                <form-item>
+                    <i-input v-model="keyword"  placeholder="请输入关键字..." style="width: 200px"/>
+                </form-item>
+                <form-item>
+                    <i-button @click = "loadPageData(1);">查询</i-button>
+                </form-item>
+            </Row>
+        </i-form>
+    </div>
+    <i-table highlight-row ref="currentRowTable" :columns="columns" :data="rows"></i-table>
+    <div style="width: 100%; text-align: center">
+        <Page :total="totalSize" :page-size="15" :current="pageNo" show-total @on-change="pageChange"/>
+    </div>
+</div>
+
+</body>
+</html>

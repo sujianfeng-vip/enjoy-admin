@@ -1,0 +1,82 @@
+<th:block th:fragment="parts">
+<script th:inline="javascript">
+    var moduleApi = /*[[${moduleApi}]]*/ "";
+    var moduleCode = /*[[${moduleCode}]]*/ "";
+    methods.loadPageData = function(pageNo) {
+        var param = {
+            systemId: store.systemId,
+            keyword: store.keyword,
+            pageNo: pageNo,
+            pageSize: 15
+        };
+        httpClient.postJson(`/${moduleApi}/queryPage`,  param ,function(op){
+            if (!op.success){
+                window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                setTimeout(function (){
+                    window.vue.$Loading.error();
+                }, 100)
+                return;
+            }
+            store.rows = op.data.rows;
+            store.totalSize = op.data.totalSize;
+        })
+        store.pageNo = pageNo;
+    }
+    methods.addNew = function() {
+        window.parent.callCommForm("添加", `/${moduleCode}/edit?systemId=${store.systemId}`, 200, 500)
+    }
+    methods.edit = function(row) {
+        window.parent.callCommForm("修改", `/${moduleCode}/edit?systemId=${store.systemId}&id=${row.id}`, 200, 500)
+    }
+    methods.delete = function(row) {
+        var param = {
+            ids: [row.id]
+        }
+        window.parent.confirmForm("提示", "您确定删除此行数据?", function(){
+            httpClient.postJson(`/${moduleApi}/delete`,  param ,function(op){
+                if (!op.success){
+                    window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                    setTimeout(function (){
+                        window.vue.$Loading.error();
+                    }, 100)
+                    return;
+                }
+                window.vue.$Notice.info({title: '删除成功!'})
+                methods.loadPageData(store.pageNo)
+            })
+        })
+    }
+    methods.editPermission = function(row) {
+        /*var url = `/role-permission/list?permissionId=${row.id}`
+         $('#iFrameRolePermission').attr("src", url)
+         store.modalPermissionEdit = true
+        */
+        window.parent.callCommForm("修改", `/rbac/role-permission/list?roleId=${row.id}`, 500, 700)
+    }
+    methods.save = function() {
+        httpClient.postJson(`/${moduleApi}/save`, store.formItem ,function(op){
+            if (!op.success){
+                window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                setTimeout(function (){
+                    window.vue.$Loading.error();
+                }, 100)
+                return;
+            }
+            window.vue.$Notice.info({title: '保存成功!'})
+            store.modalEdit = false
+            methods.loadPageData(store.pageNo)
+        })
+    }
+    methods.cancel = function() {
+
+    }
+    methods.pageChange = function (pageNo) {
+        methods.loadPageData(pageNo);
+    };
+
+    methods.systemChange = function(value) {
+        window.location.href = `/${moduleCode}/list?systemId=${value}`
+    }
+
+</script>
+</th:block>

@@ -1,0 +1,14 @@
+<th:block th:fragment="parts">
+<script th:inline="javascript">
+    store.columns = [
+        {
+            type: 'selection',
+            width: 60,
+            align: 'center',
+            key: "allow"
+        },
+        {title: '角色', key: 'name'},
+        {title: '备注', key: 'remark'}
+    ];
+</script>
+</th:block>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:include="comm/head.html :: include" />
+    <!--<th:block th:include="comm/websocket-client.html :: parts" />-->
+    <script th:inline="javascript">
+        store.formItem = {
+            loginName: 'admin',
+            password: '123456'
+        }
+        store.formItem.systemId =  /*[[${defaultSystemId}]]*/ "";
+        methods.login = function() {
+            store.formItem.channelId = window.wsChannelId
+            httpClient.postJson("/login/loginByPassword", store.formItem, function(op){
+                if (!op.success) {
+                    window.vue.$Notice.error({title: op.message})
+                    return
+                }
+                window.localStorage.setItem("loginData", JSON.stringify(store.formItem))
+                window.location.href = "/"
+            })
+        }
+    </script>
+    <style>
+        body {
+            background: url('//hougu-erp.oss-cn-hangzhou.aliyuncs.com/production/static/login.jpg') no-repeat;
+            background-size: 100% auto;
+        }
+        #app {
+            width: 100%;
+        }
+        .pnl-logo {
+            position: absolute;
+            width: 20%;
+            min-width: 300px;
+            top: 200px;
+            left: 40%;
+            text-align: center;
+        }
+        .pnl-logo img {
+            width: 60%;
+        }
+        .login-panel {
+            width: 20%;
+            min-width: 300px;
+            position: absolute;
+            top: 300px;
+            left: 40%;
+            background-color: rgba(255, 255, 255, 1);
+            box-shadow:2px 2px 10px #909090;
+        }
+        .login-form {
+            width: 100%;
+            text-align: center;
+        }
+        .login-form img {
+            width: 80%;
+        }
+        .layout-copy{
+            /*border: 1px solid darkgray;*/
+            /*background: #f5f7f9;*/
+            border: none;
+            height: 50px;
+            line-height: 50px;
+            vertical-align: middle;
+            text-align: center;
+            color: darkgray;
+            position: absolute;
+            left: 0;
+            bottom: 1px;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    </style>
+
+</head>
+<body>
+<div id="app">
+    <div class="pnl-logo">
+
+    </div>
+    <Card class="login-panel">
+        <ul>
+            <Tabs th:value="${defaultLoginPane}">
+                <!--
+                <Tab-pane label="二维码" name="paneQr">
+                    <div class="login-form">
+                        <img th:src="${xcxLoginQr}" />
+                    </div>
+                </Tab-pane>
+                -->
+                <Tab-pane label="密码登录" name="panePassword" style="text-align: center">
+                    <i-form inline :label-width='0' v-model="formItem"  style='margin-left: 10%; width: 80%'>
+                        <Row>
+                            <form-item  style='width: 100%; margin-bottom: 25px' >
+                                <i-select v-model="formItem.systemId" placeholder="系统" style="width: 100%">
+                                    <i-option th:each="item: ${systemRows}" th:value="${item.id}" th:text="${item.name}"></i-option>
+                                </i-select>
+                            </form-item>
+                            <form-item style='width: 100%; margin-bottom: 25px' >
+                                <i-input v-model='formItem.loginName' th:value="admin" placeholder='请输入登录名称...' style='width: 100%' >
+                                    <Icon type="ios-person" slot="prepend"></Icon>
+                                </i-input>
+                            </form-item>
+                            <form-item style='width: 100%; margin-bottom: 25px' >
+                                <i-input v-model='formItem.password' th:value="123456"  type="password" placeholder='请输入密码...' style='width: 100%' >
+                                    <Icon type="ios-lock" slot="prepend"></Icon>
+                                </i-input>
+                            </form-item>
+
+                            <!--
+                            <form-item style='width: 100%; margin-bottom: 25px' >
+                                <i-input v-model='formItem.verificationCode'  placeholder='请输入验证码...' style='width: 100%' >
+                                    <Icon type="ios-keypad" slot="prepend"></Icon>
+                                </i-input>
+                            </form-item>
+                            -->
+                        </Row>
+                        <Row style="text-align: center">
+                            <i-button style="width: 50%" type="primary" @click="login">登录</i-button>
+                        </Row>
+                    </i-form>
+                </Tab-pane>
+            </Tabs>
+        </ul>
+    </Card>
+    <div class="layout-copy">
+        <label>码农锋哥出品(sujianfeng.vip)</label>
+    </div>
+</div>
+
+</body>
+</html>

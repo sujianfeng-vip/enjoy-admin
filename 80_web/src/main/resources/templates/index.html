@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:include="comm/head.html :: include" />
+    <!--<th:block th:include="comm/websocket-client.html :: parts" />-->
+
+    <script th:inline="javascript">
+        store.breadcrumbItems = [{title: '首页'}]
+
+        window.gotoPage = function(url) {
+            //window.location.href = url;
+            $('#iFrameBody').attr("src", url)
+        }
+
+        methods.logout = function() {
+            window.location.href = "/login"
+        }
+
+        methods.editInfo = function() {
+            window.parent.callCommForm("修改资料", `/rbac/user-info/edit`, 250, 500)
+        }
+
+        methods.editPassword = function() {
+            window.parent.callCommForm("修改密码", `/rbac/user-password/edit`, 200, 500)
+        }
+
+        methods.changeTheme = function(theme) {
+            httpClient.postJson("/user-api/changeTheme", {theme: theme}, function(op){
+                if (!op.success){
+                    window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                    setTimeout(function (){
+                        window.vue.$Loading.error();
+                    }, 100)
+                    return;
+                }
+                window.location.reload()
+            })
+        }
+        methods.changeSystem = function(item) {
+            var systemId = item.attributes.systemId.nodeValue
+            httpClient.postJson("/user-api/changeSystem", {id: systemId}, function(op){
+                if (!op.success){
+                    window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                    setTimeout(function (){
+                        window.vue.$Loading.error();
+                    }, 100)
+                    return;
+                }
+                window.location.reload()
+            })
+        }
+    </script>
+</head>
+<body>
+<div id="app">
+    <div class="layout">
+        <Row type="flex">
+            <i-col class="layout-left">
+                <th:block th:include="comm/left.html :: menuBlock(title=${pageTitle}, menus=${menuList})" />
+            </i-col>
+            <i-col class="layout-body">
+                <div class="layout-header">
+                    <div class="layout-breadcrumb">
+                        <th:block th:include="comm/breadcrumb.html :: parts" />
+                    </div>
+                    <span style="float: right">
+                        <i-menu mode="horizontal" theme="light" >
+                            <Submenu>
+                                <template slot="title">
+                                    <Icon type="ios-person"></Icon>
+                                    <th:block th:text="${currUser.name}"></th:block>
+                                </template>
+                                <Menu-item onclick="methods.editInfo()">
+                                    <Icon type="ios-lock"></Icon>
+                                    个人中心
+                                </Menu-item>
+                                <Menu-item onclick="methods.editPassword()">
+                                    <Icon type="ios-lock"></Icon>
+                                    密码修改
+                                </Menu-item>
+                                <Menu-item onclick="methods.logout()">
+                                    <Icon type="ios-exit"></Icon>
+                                    退出
+                                </Menu-item>
+                            </Submenu>
+                        </i-menu>
+                    </span>
+                </div>
+                <div class="layout-content">
+                    <div class="layout-content-main">
+                        <iframe id="iFrameBody" src="/home/welcome"></iframe>
+                    </div>
+                </div>
+            </i-col>
+        </Row>
+    </div>
+    <div class="layout-copy">
+        2023 &copy; sujianfeng.vip
+    </div>
+    <th:block th:include="comm/comm-form.html :: parts" />
+</div>
+<script>
+    function menuItemClick(item) {
+        if (item.attributes.windowType.nodeValue === "1") {
+            window.open(item.attributes.url.nodeValue)
+            return
+        }
+        if (item.attributes.windowType.nodeValue === "2") {
+            window.callCommForm(item.attributes.title.nodeValue, item.attributes.url.nodeValue, 300, 500)
+            return
+        }
+        gotoPage(item.attributes.url.nodeValue);
+        store.breadcrumbItems = [{title: "首页"}, {title: item.attributes.parentTitle.nodeValue}, {title: item.attributes.title.nodeValue}]
+    }
+    $('.layout-content-main').css("height", window.screen.availHeight * 0.75)
+
+    var iframe = document.getElementById("iFrameBody");
+    if (iframe.attachEvent) {
+        iframe.attachEvent("onload", function (e) {
+            console.log("onload => ", e)
+        });
+    }
+    if (iframe.addEventListener) {
+        iframe.addEventListener("load", function (e) {
+            console.log("load => ", e)
+        }, false);
+    }
+
+</script>
+</body>
+</html>

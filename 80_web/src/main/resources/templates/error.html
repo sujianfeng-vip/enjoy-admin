@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>系统错误</title>
+</head>
+<body>
+    <h1>自定义错误页面</h1>
+    <h3>timestamp:</h3><th:block th:text="${timestamp}" />
+    <h3>status: </h3><th:block th:text="${status}" />
+    <h3>error: </h3><th:block th:text="${error}" />
+    <h3>message: </h3> <th:block th:text="${message}" />
+    <h3>path: </h3> <th:block th:text="${path}" />
+</body>
+</html>

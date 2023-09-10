@@ -1,0 +1,55 @@
+<th:block th:fragment="parts">
+<script th:inline="javascript">
+
+    function wsProtocol() {
+        return window.location.protocol === "http:" ? "ws" : "wss"
+    }
+
+    window.wsConnect = function() {
+        //let channelId = /*[[${#channelId}]]*/ "";
+        let channelId = getCookie("USER_TOKEN")
+        window.wsChannelId = channelId
+        window.wsConnected = false
+        console.log("通道 => ", channelId)
+        let wsUrl = `${wsProtocol()}:/${window.location.host}/websocket/${channelId}`
+        console.log("WS-URL => ", wsUrl)
+        window.wsChannel = new WebSocket(wsUrl);
+        window.wsChannel.onopen = function () {
+            console.log(`通道[${channelId}]连接成功!`)
+            window.wsConnected = true
+        };
+        window.wsChannel.onmessage = function (evt) {
+            console.log(`通道[${channelId}]收到消息 => `, evt.data)
+            let msg = JSON.parse(evt.data)
+            if (msg.type === "LoginSuccess"){
+                console.log(`登录成功消息!`)
+                window.location.href = "/"
+            }
+        };
+        window.wsChannel.onclose = function () {
+            console.log(`通道[${channelId}]连接断开!`)
+            window.wsConnected = false
+        };
+    }
+    window.wsKeepLive = function() {
+        setTimeout(function (){
+            //发送心跳
+            try {
+                if (!window.wsConnected){
+                    window.wsConnect()
+                }
+                window.wsChannel.send(JSON.stringify({
+                    type: 'Heartbeat'
+                }))
+            }catch (e) {
+                window.wsConnected = false
+                console.error("连接失败 => ", e)
+                console.log("等待5妙后重新连接....")
+            }
+            window.wsKeepLive()
+        }, 5000)
+    }
+    window.wsConnect()
+    window.wsKeepLive()
+</script>
+</th:block>

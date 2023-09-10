@@ -1,0 +1,5 @@
+<th:block th:fragment="parts">
+    <Breadcrumb>
+        <Breadcrumb-item v-for="item in breadcrumbItems" href="#">{{item.title}}</Breadcrumb-item>
+    </Breadcrumb>
+</th:block>
