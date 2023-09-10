@@ -45,12 +45,8 @@ class ViewResolverConfig {
     @Autowired
     lateinit var jdbcTbDao: MyJdbcDao
 
-    @Value("\${cndRoot}")
-    lateinit var cndRoot: String
-
     @PostConstruct
     fun init() {
-        thymeleafViewResolver.addStaticVariable("cdnRoot", cndRoot)
         thymeleafViewResolver.addStaticVariable("test123", "123")
     }
 }

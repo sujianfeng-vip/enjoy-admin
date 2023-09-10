@@ -1,5 +1,4 @@
 logging-path: ./logs/
-cndRoot: //oss-erp2.xmhougu.com/hougu-bi
 
 server:
   port: 38181
