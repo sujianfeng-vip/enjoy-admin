@@ -17,7 +17,7 @@ class MenuPageParam: PageParam() {
 
     override fun createBuilder(tbDao: TbDao?): ISqlConditionBuilder {
         return RbacMenuCU().apply {
-            this.and().block(" ifnull(a.parent_id, '') = '$parentId'  ")
+            this.and().block("(a.id = '$parentId' or ifnull(a.parent_id, '') = '$parentId')")
             this.and().SYSTEM_ID.eq(systemId)
             this.and(StringUtilsEx.isNotEmpty(keyword)) {
                 this.NAME.like("%$keyword%")

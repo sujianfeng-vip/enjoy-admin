@@ -10,6 +10,7 @@
         store.pageNo = 1;
         store.totalSize = 0;
         store.rows = [];
+        store.treeData = []
         store.columns = [
             {title: '名称', key: 'name'},
             {title: '操作', key: 'action',
@@ -142,12 +143,63 @@
         methods.systemChange = function(value) {
             window.location.href = `/rbac/menu/list?systemId=${value}`
         }
+        methods.loadTree = ()=> {
+            httpClient.postJson(`/${moduleApi}/getMenuTree`, {systemId: store.systemId} ,function(op){
+                if (!op.success){
+                    window.vue.$Notice.error({title: '系统错误', desc: op.message})
+                    setTimeout(function (){
+                        window.vue.$Loading.error();
+                    }, 100)
+                    return;
+                }
+                treeNodeAddRender(op.data)
+                store.treeData = op.data
+            })
+        }
+        function treeNodeAddRender(treeNodeList) {
+            if (!treeNodeList) {
+                return
+            }
+            for (let i in treeNodeList) {
+                let node = treeNodeList[i]
+                node.render = function (h, {root, node, data}) {
+                    return h('div', {
+                        domProps: {
+                            innerHTML: `<p onclick="methods.selectTreeNode('${data.value}');">${data.title}</p>`
+                        }
+                    });
+                }
+                treeNodeAddRender(node.children)
+            }
+        }
+        methods.selectTreeNode = function(id)  {
+            store.parentId = id
+            methods.loadPageData(1)
+        }
         $(function(){
             setTimeout(function(){
+                methods.loadTree()
                 methods.loadPageData(1);
             }, 500);
         });
     </script>
+    <style>
+        .ivu-tree {
+            color: white;
+        }
+        .ivu-tree-title {
+            color: white;
+        }
+        .ivu-tree-title:hover {
+            color: black;
+        }
+        .ivu-tree-title-selected {
+            color: black;
+        }
+        .ivu-tree-title-selected:hover {
+            color: black;
+        }
+    </style>
 </head>
 <body>
 
@@ -161,12 +213,6 @@
                     </i-select>
                 </form-item>
                 <form-item>
-                    <i-select v-model="parentId"  placeholder="上级菜单" style="width: 200px" @on-change="loadPageData(1)">
-                        <i-option value="">全部</i-option>
-                        <i-option th:each="item: ${rootMenus}" th:value="${item.id}" th:text="${item.name}"></i-option>
-                    </i-select>
-                </form-item>
-                <form-item>
                     <i-input v-model="keyword"  placeholder="请输入关键字..." style="width: 200px"/>
                 </form-item>
                 <form-item>
@@ -176,10 +222,20 @@
             </Row>
         </i-form>
     </div>
-    <i-table highlight-row ref="currentRowTable" :columns="columns" :data="rows"></i-table>
-    <div style="width: 100%; text-align: center">
-        <Page :total="totalSize" :page-size="15" :current="pageNo" show-total @on-change="pageChange"/>
-    </div>
+    <Layout>
+        <Sider style="margin-left: 5px; min-height: 800px">
+            <Tree :data="treeData" />
+        </Sider>
+
+        <Content class="body-content" style="width: 100%; overflow-y: auto;" >
+            <i-table highlight-row ref="currentRowTable" :columns="columns" :data="rows"></i-table>
+            <div style="width: 100%; text-align: center">
+                <Page :total="totalSize" :page-size="15" :current="pageNo" show-total @on-change="pageChange"/>
+            </div>
+        </Content >
+
+    </Layout>
+
 </div>
 
 </body>
