@@ -11,7 +11,7 @@ pidFile="./output/tmp.pid"
 pid=$(cat ${pidFile})
 kill -9 ${pid}
 #read -p "this process closed: PID=${pid}. pls press any key to continue..." ok
-nohup java -jar -Xms512m -Xmx2048m ./output/jars/hougu-bi-1.0.0-SNAPSHOT.jar --spring.profiles.active=$ENV_CODE   >/dev/null &
+nohup java -jar -Xms512m -Xmx2048m ./output/jars/80_web-1.0.0-SNAPSHOT.jar --spring.profiles.active=$ENV_CODE   >/dev/null &
 echo $! > ${pidFile}
 echo "this process is startd: PID=${pid}"
 #read -p  "pls press any key to continue..." ok
